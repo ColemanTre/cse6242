@@ -73,6 +73,10 @@ class Graph:
         Where 'source' is the id of the source node and 'target' is the id of the target node
         e.g., for two nodes with ids 'a' and 'b' respectively, add the tuple ('a', 'b') to self.edges
         """
+        # Reject self-loops (edges from a node to itself)
+        if source == target:
+            return
+        
         # For undirected graphs, normalize edge so smaller ID comes first
         edge = tuple(sorted([source, target]))
         if edge not in self.edges:
@@ -440,6 +444,10 @@ if __name__ == "__main__":
                 actor_id = str(cast_member['id'])
                 actor_name = cast_member.get('name', '').replace(',', '')  # Remove commas
                 
+                # Skip if this is Laurence Fishburne himself (avoid self-loops)
+                if actor_id == '2975':
+                    continue
+                
                 # Add node if it doesn't exist
                 graph.add_node(id=actor_id, name=actor_name)
                 new_nodes_base.add(actor_id)
@@ -470,6 +478,10 @@ if __name__ == "__main__":
                         for cast_member in cast:
                             co_actor_id = str(cast_member['id'])
                             co_actor_name = cast_member.get('name', '').replace(',', '')  # Remove commas
+                            
+                            # Skip if this creates a self-loop
+                            if co_actor_id == node_id:
+                                continue
                             
                             # Add node if it doesn't already exist
                             if (co_actor_id, co_actor_name) not in graph.nodes:
