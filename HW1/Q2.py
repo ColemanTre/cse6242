@@ -207,7 +207,16 @@ def part_8_b() -> str:
     
 def part_8_c():
     ############### EDIT SQL STATEMENT ###################################
-    query = "SELECT COUNT(*) FROM incident_overviews WHERE subject MATCH 'dead NEAR/2 pangolin';"
+    query = """SELECT COUNT(*)
+FROM incident_overviews \
+WHERE
+  LOWER(' ' || subject || ' ') GLOB '* dead pangolin *'
+  OR LOWER(' ' || subject || ' ') GLOB '* dead ? pangolin *'
+  OR LOWER(' ' || subject || ' ') GLOB '* dead ?* pangolin *'
+  OR LOWER(' ' || subject || ' ') GLOB '* dead ? ? pangolin *'
+  OR LOWER(' ' || subject || ' ') GLOB '* dead ? ?* pangolin *'
+  OR LOWER(' ' || subject || ' ') GLOB '* dead ?* ? pangolin *'
+  OR LOWER(' ' || subject || ' ') GLOB '* dead ?* ?* pangolin *';"""
     ######################################################################
     return query
 
