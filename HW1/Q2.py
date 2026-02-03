@@ -172,7 +172,7 @@ def part_5() -> str:
 
 def part_6() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = "SELECT category, COUNT(*) AS count, ROUND(AVG( CASE WHEN prison_time_unit = 'Year' THEN prison_time * 365 WHEN prison_time_unit = 'Month' THEN prison_time * 30 WHEN prison_time_unit = 'Week' THEN prison_time * 7 WHEN prison_time_unit = 'Day' THEN prison_time ELSE 0 END ), 2) AS avg_prison_time_days FROM incidents INNER JOIN outcomes USING (report_id) GROUP BY category HAVING COUNT(*) > 50 ORDER BY avg_prison_time_days DESC;"
+    query = "SELECT category, COUNT(*) AS count, ROUND(AVG( CASE WHEN LOWER(prison_time_unit) LIKE '%year%' THEN COALESCE(prison_time,0) * 365 WHEN LOWER(prison_time_unit) LIKE '%month%' THEN COALESCE(prison_time,0) * 30 WHEN LOWER(prison_time_unit) LIKE '%week%' THEN COALESCE(prison_time,0) * 7 WHEN LOWER(prison_time_unit) LIKE '%day%' THEN COALESCE(prison_time,0) ELSE 0 END ), 2) AS avg_prison_time_days FROM incidents INNER JOIN outcomes USING (report_id) GROUP BY category HAVING COUNT(*) > 50 ORDER BY avg_prison_time_days DESC;"
     ######################################################################
     return query
 
@@ -186,7 +186,7 @@ def part_7_a() -> str:
 
 def part_7_b() -> str:
     ############### EDIT SQL STATEMENT ###################################
-    query = "SELECT SUBSTR(date, 1, 4) AS year, SUM(num_ppl_fined) AS total_ppl_fined, SUM(fine) AS total_fine_amount FROM fines GROUP BY year ORDER BY total_fine_amount DESC LIMIT 3;"
+    query = "SELECT SUBSTR(date, 1, 4) AS year, SUM(num_ppl_fined) AS total_ppl_fined, ROUND(SUM(fine), 2) AS total_fine_amount FROM fines GROUP BY year ORDER BY total_fine_amount DESC LIMIT 3;"
     ######################################################################
     return query
 
@@ -207,7 +207,7 @@ def part_8_b() -> str:
     
 def part_8_c():
     ############### EDIT SQL STATEMENT ###################################
-    query = "SELECT COUNT(*) FROM incident_overviews WHERE subject MATCH 'dead AND pangolin';"
+    query = "SELECT COUNT(*) FROM incident_overviews WHERE subject MATCH 'dead NEAR/2 pangolin';"
     ######################################################################
     return query
 
