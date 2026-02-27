@@ -306,21 +306,6 @@
                     .text(label);
             });
             
-            // Add gray color for no data
-            const noDataY = 4 * 30;
-            legendGroup.append("rect")
-                .attr("x", 0)
-                .attr("y", noDataY)
-                .attr("width", 20)
-                .attr("height", 20)
-                .style("fill", "#ccc");
-            
-            legendGroup.append("text")
-                .attr("x", 30)
-                .attr("y", noDataY + 15)
-                .attr("font-size", "12px")
-                .text("No Data");
-            
             // Add credit/username
             svg.append("text")
                 .attr("id", "credit")
