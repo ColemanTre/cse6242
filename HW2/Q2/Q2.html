@@ -98,7 +98,7 @@ d3.dsv(",", "board_games.csv", function(d) {
   // Create scales
   var radiusScale = d3.scaleSqrt()
     .domain([minDegree, maxDegree])
-    .range([5, 20]);
+    .range([8, 25]);
 
   var colorScale = d3.scaleLinear()
     .domain([minDegree, (minDegree + maxDegree) / 2, maxDegree])
@@ -190,7 +190,10 @@ d3.dsv(",", "board_games.csv", function(d) {
       .attr("dx", function(d) {
         return radiusScale(d.degree) + 3;
       })
-      .attr("dy", -radiusScale(function(d) { return d.degree; }))
+      .attr("dy", function(d) {
+        return -radiusScale(d.degree) + 3;
+      })
+      .style("font-size", "9px")
       .text(function(d) { return d.name; });
 
   function dragstarted(d) {
