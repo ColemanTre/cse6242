@@ -4,15 +4,30 @@
 
 path.link {
   fill: none;
-  stroke: #666;
   stroke-width: 1.5px;
 }
 
-circle {
-  fill: #ccc;
-  stroke: #fff;
-  stroke: black;
+path.link.similar {
+  stroke: #999;
+  stroke-width: 3px;
+  stroke-dasharray: 0;
+}
+
+path.link.notsimilar {
+  stroke: #00aa00;
   stroke-width: 1.5px;
+  stroke-dasharray: 5,5;
+}
+
+circle {
+  stroke: #fff;
+  stroke-width: 1.5px;
+  cursor: pointer;
+}
+
+circle.pinned {
+  stroke: #000;
+  stroke-width: 2.5px;
 }
 
 text {
@@ -21,9 +36,21 @@ text {
   pointer-events: none;
 }
 
+text.nodeLabel {
+  font-weight: bold;
+  font-size: 11px;
+  text-anchor: start;
+}
+
+text#credit {
+  font-size: 12px;
+  font-weight: bold;
+  fill: #333;
+}
+
 </style>
 <meta charset="utf-8">
-<title></title>
+<title>Force-Directed Graph: Board Games</title>
 </head>
 
 <body>
@@ -48,51 +75,45 @@ d3.dsv(",", "board_games.csv", function(d) {
       link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
   });
 
+  // Calculate node degrees for scaling
+  var nodeArray = d3.values(nodes);
+  var degrees = {};
+  nodeArray.forEach(function(node) {
+    degrees[node.name] = 0;
+  });
+  
+  links.forEach(function(link) {
+    degrees[link.source.name]++;
+    degrees[link.target.name]++;
+  });
+
+  nodeArray.forEach(function(node) {
+    node.degree = degrees[node.name];
+  });
+
+  // Get min and max degree for scaling
+  var minDegree = d3.min(nodeArray, function(d) { return d.degree; });
+  var maxDegree = d3.max(nodeArray, function(d) { return d.degree; });
+
+  // Create scales
+  var radiusScale = d3.scaleSqrt()
+    .domain([minDegree, maxDegree])
+    .range([5, 20]);
+
+  var colorScale = d3.scaleLinear()
+    .domain([minDegree, (minDegree + maxDegree) / 2, maxDegree])
+    .range(["#ffffcc", "#fd9b3b", "#b10026"]);
+
   var width = 1200,
       height = 700;
-
-  //DO NOT MODIFY THE BELOW BLOCK OF CODE//
-  var force = d3.forceSimulation()
-      .nodes(d3.values(nodes))
-      .force("link", d3.forceLink(links).distance(100))
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force("x", d3.forceX())
-      .force("y", d3.forceY())
-      .force("charge", d3.forceManyBody().strength(-250))
-      .alphaTarget(1)
-      .on("tick", tick);
-  //DO NOT MODIFY THE ABOVE BLOCK OF CODE//
 
   var svg = d3.select("body").append("svg")
       .attr("width", width)
       .attr("height", height);
 
-  // add the links
-  var path = svg.append("g")
-      .selectAll("path")
-      .data(links)
-      .enter()
-      .append("path")
-      .attr("class", function(d) { return "link " + d.type; });
-
-  // define the nodes
-  var node = svg.selectAll(".node")
-      .data(force.nodes())
-      .enter().append("g")
-      .attr("class", "node")
-      .call(d3.drag()
-          .on("start", dragstarted)
-          .on("drag", dragged)
-          .on("end", dragended));
-
-  // add the nodes and be sure to not have duplicate of this section
-  node.append("circle")
-      .attr("id", function(d){
-         return (d.name.replace(/\s+/g,'').toLowerCase());
-      })
-      .attr("r", 5);
-
-  // add the curvy lines
+  // Define tick function before force simulation
+  var path, node, labels;
+  
   function tick() {
       path.attr("d", function(d) {
           var dx = d.target.x - d.source.x,
@@ -111,10 +132,69 @@ d3.dsv(",", "board_games.csv", function(d) {
       });
   };
 
+  //DO NOT MODIFY THE BELOW BLOCK OF CODE//
+  var force = d3.forceSimulation()
+      .nodes(d3.values(nodes))
+      .force("link", d3.forceLink(links).distance(100))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force("x", d3.forceX())
+      .force("y", d3.forceY())
+      .force("charge", d3.forceManyBody().strength(-250))
+      .alphaTarget(1)
+      .on("tick", tick);
+  //DO NOT MODIFY THE ABOVE BLOCK OF CODE//
+
+  // add the links
+  path = svg.append("g")
+      .selectAll("path")
+      .data(links)
+      .enter()
+      .append("path")
+      .attr("class", function(d) { 
+        return "link " + (d.value === 0 ? "similar" : "notsimilar"); 
+      });
+
+  // define the nodes
+  node = svg.selectAll(".node")
+      .data(force.nodes())
+      .enter().append("g")
+      .attr("class", "node")
+      .call(d3.drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended));
+
+  // add the nodes and be sure to not have duplicate of this section
+  node.append("circle")
+      .attr("id", function(d){
+         return (d.name.replace(/\s+/g,'').toLowerCase());
+      })
+      .attr("r", function(d) {
+        return radiusScale(d.degree);
+      })
+      .attr("fill", function(d) {
+        return colorScale(d.degree);
+      })
+      .on("dblclick", function(d) {
+        d.fixed = false;
+        d3.select(this).classed("pinned", false);
+      });
+
+  // Add labels for nodes
+  labels = node.append("text")
+      .attr("class", "nodeLabel")
+      .attr("dx", function(d) {
+        return radiusScale(d.degree) + 3;
+      })
+      .attr("dy", -radiusScale(function(d) { return d.degree; }))
+      .text(function(d) { return d.name; });
+
   function dragstarted(d) {
       if (!d3.event.active) force.alphaTarget(0.3).restart();
       d.fx = d.x;
       d.fy = d.y;
+      d.fixed = true;
+      d3.select(this).select("circle").classed("pinned", true);
   };
 
   function dragged(d) {
@@ -133,6 +213,13 @@ d3.dsv(",", "board_games.csv", function(d) {
           d.fy = null;
       }
   };
+
+  // Add GT username credit
+  svg.append("text")
+      .attr("id", "credit")
+      .attr("x", width - 100)
+      .attr("y", 20)
+      .text("ctreadwell8");
   
 }).catch(function(error) {
   console.log(error);
