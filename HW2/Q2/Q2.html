@@ -4,13 +4,12 @@
 
 path.link {
   fill: none;
-  stroke-width: 1.5px;
 }
 
 path.link.similar {
   stroke: #999;
   stroke-width: 3px;
-  stroke-dasharray: 0;
+  stroke-dasharray: none;
 }
 
 path.link.notsimilar {
@@ -26,8 +25,9 @@ circle {
 }
 
 circle.pinned {
-  stroke: #000;
+  stroke: #333;
   stroke-width: 2.5px;
+  filter: brightness(0.7);
 }
 
 text {
@@ -178,6 +178,10 @@ d3.dsv(",", "board_games.csv", function(d) {
       .on("dblclick", function(d) {
         d.fixed = false;
         d3.select(this).classed("pinned", false);
+        // Restore original color by getting the degree-based color
+        d3.select(this).attr("fill", function(d) {
+          return colorScale(d.degree);
+        });
       });
 
   // Add labels for nodes
@@ -194,7 +198,13 @@ d3.dsv(",", "board_games.csv", function(d) {
       d.fx = d.x;
       d.fy = d.y;
       d.fixed = true;
-      d3.select(this).select("circle").classed("pinned", true);
+      var circle = d3.select(this).select("circle");
+      circle.classed("pinned", true);
+      // Darken the color to show it's pinned
+      var originalColor = colorScale(d.degree);
+      circle.attr("fill", function() {
+        return d3.rgb(originalColor).darker(1.5).toString();
+      });
   };
 
   function dragged(d) {
