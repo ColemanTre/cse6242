@@ -250,7 +250,7 @@
       const symbolsGroup = plot.append("g").attr("id", "symbols-b");
 
       // Add circle markers every 3 months - ONLY for 4 games
-      const threeMonthlyData = data.filter((d, i) => i % 3 === 0);
+      const threeMonthlyData = data.filter((d, i) => i % 3 === 1);
 
       games4.forEach((game, idx) => {
         const gameIndex = allGames.indexOf(game);
@@ -396,7 +396,7 @@
       const symbolsGroup = plot.append("g").attr("id", "symbols-c-1");
 
       // Add circle markers every 3 months - ONLY for 4 games
-      const threeMonthlyData = data.filter((d, i) => i % 3 === 0);
+      const threeMonthlyData = data.filter((d, i) => i % 3 === 1);
 
       games4.forEach((game, idx) => {
         const gameIndex = allGames.indexOf(game);
@@ -542,7 +542,7 @@
       const symbolsGroup = plot.append("g").attr("id", "symbols-c-2");
 
       // Add circle markers every 3 months - ONLY for 4 games
-      const threeMonthlyData = data.filter((d, i) => i % 3 === 0);
+      const threeMonthlyData = data.filter((d, i) => i % 3 === 1);
 
       games4.forEach((game, idx) => {
         const gameIndex = allGames.indexOf(game);
