@@ -82,6 +82,12 @@
       .attr("id", "container")
       .attr("transform", "translate(" + lineMargin.left + "," + lineMargin.top + ")");
 
+    // Create bar chart title div
+    d3.select("body")
+      .append("div")
+      .attr("id", "bar_chart_title")
+      .style("display", "none");
+
     // Fetch and process the data
     d3.dsv(",", "average-rating.csv", function (d) {
       return {
@@ -256,7 +262,7 @@
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
-        .text("Board games by Rating 2015–2019");
+        .text("Board games by Rating 2015-2019");
 
       // Add credit
       lineSvg.append("text")
@@ -391,12 +397,6 @@
         d3.select("#bar_chart_title").style("display", "none");
         d3.select("#bar_chart").style("display", "none");
       }
-
-      // Create bar chart title div
-      d3.select("body")
-        .append("div")
-        .attr("id", "bar_chart_title")
-        .style("display", "none");
 
     }).catch(function (error) {
       console.log(error);
