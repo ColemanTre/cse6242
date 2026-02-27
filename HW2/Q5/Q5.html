@@ -6,6 +6,7 @@
     
     <!-- import required libraries here -->
     <script src="../lib/d3.v5.min.js"></script>
+    <script src="../lib/d3-geo-projection.v2.min.js"></script>
     <script src="../lib/d3-tip.min.js"></script>
     <script src="../lib/d3-legend.min.js"></script>
     <script src="../lib/topojson.v2.min.js"></script>
@@ -226,7 +227,7 @@
                     const incidentData = incidentMap[countryName];
                     
                     if (!incidentData || incidentData.incidents === undefined) {
-                        return "#ccc"; // Gray for countries with no data
+                        return "#d9d9d9"; // Light gray for countries with no data
                     }
                     return colorScale(incidentData.incidents);
                 })
