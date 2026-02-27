@@ -83,9 +83,9 @@
 
       // Create chart functions and render charts
       renderChartA(games8, data, colors, margin, width, height);
-      renderChartB(games4, data, colors, margin, width, height);
-      renderChartC1(games4, data, colors, margin, width, height);
-      renderChartC2(games4, data, colors, margin, width, height);
+      renderChartB(games8, data, colors, margin, width, height);
+      renderChartC1(games8, data, colors, margin, width, height);
+      renderChartC2(games8, data, colors, margin, width, height);
 
       // Set signature
       d3.select("#signature").text("gburdell3");
@@ -186,7 +186,9 @@
     }
 
     // ============ Q3.2: With Rankings ============
-    function renderChartB(games, data, colors, margin, width, height) {
+    function renderChartB(allGames, data, colors, margin, width, height) {
+      const games4 = ["Catan", "Codenames", "Terraforming Mars", "Gloomhaven"];
+      
       const svg = d3.select("body").append("svg")
         .attr("id", "svg-b")
         .attr("width", width + margin.left + margin.right + 120)
@@ -213,7 +215,7 @@
         .range([0, width]);
 
       const yScale = d3.scaleLinear()
-        .domain([0, d3.max(games, game => d3.max(data, d => d[game]))])
+        .domain([0, d3.max(allGames, game => d3.max(data, d => d[game]))])
         .range([height, 0]);
 
       // Create line generator
@@ -224,8 +226,8 @@
       // Lines group
       const linesGroup = plot.append("g").attr("id", "lines-b");
 
-      // Draw lines for each game
-      games.forEach((game, idx) => {
+      // Draw lines for ALL 8 games
+      allGames.forEach((game, idx) => {
         const gameData = data.map(d => ({ date: d.date, value: d[game] }));
 
         linesGroup.append("path")
@@ -244,13 +246,14 @@
           .text(game);
       });
 
-      // Symbols group
+      // Symbols group - ONLY for 4 games
       const symbolsGroup = plot.append("g").attr("id", "symbols-b");
 
-      // Add circle markers every 3 months
+      // Add circle markers every 3 months - ONLY for 4 games
       const threeMonthlyData = data.filter((d, i) => i % 3 === 0);
 
-      games.forEach((game, idx) => {
+      games4.forEach((game, idx) => {
+        const gameIndex = allGames.indexOf(game);
         threeMonthlyData.forEach(d => {
           const value = d[game];
           const rank = d[game + "_rank"];
@@ -259,7 +262,7 @@
             .attr("cx", xScale(d.date))
             .attr("cy", yScale(value))
             .attr("r", 4)
-            .style("fill", colors[idx % 10])
+            .style("fill", colors[gameIndex % 10])
             .style("stroke", "white")
             .style("stroke-width", 1.5);
 
@@ -329,7 +332,9 @@
     }
 
     // ============ Q3.3-1: Square Root Scale ============
-    function renderChartC1(games, data, colors, margin, width, height) {
+    function renderChartC1(allGames, data, colors, margin, width, height) {
+      const games4 = ["Catan", "Codenames", "Terraforming Mars", "Gloomhaven"];
+      
       const svg = d3.select("body").append("svg")
         .attr("id", "svg-c-1")
         .attr("width", width + margin.left + margin.right + 120)
@@ -356,7 +361,7 @@
         .range([0, width]);
 
       const yScale = d3.scaleSqrt()
-        .domain([0, d3.max(games, game => d3.max(data, d => d[game]))])
+        .domain([0, d3.max(allGames, game => d3.max(data, d => d[game]))])
         .range([height, 0]);
 
       // Create line generator
@@ -367,8 +372,8 @@
       // Lines group
       const linesGroup = plot.append("g").attr("id", "lines-c-1");
 
-      // Draw lines for each game
-      games.forEach((game, idx) => {
+      // Draw lines for ALL 8 games
+      allGames.forEach((game, idx) => {
         const gameData = data.map(d => ({ date: d.date, value: d[game] }));
 
         linesGroup.append("path")
@@ -387,13 +392,14 @@
           .text(game);
       });
 
-      // Symbols group
+      // Symbols group - ONLY for 4 games
       const symbolsGroup = plot.append("g").attr("id", "symbols-c-1");
 
-      // Add circle markers every 3 months
+      // Add circle markers every 3 months - ONLY for 4 games
       const threeMonthlyData = data.filter((d, i) => i % 3 === 0);
 
-      games.forEach((game, idx) => {
+      games4.forEach((game, idx) => {
+        const gameIndex = allGames.indexOf(game);
         threeMonthlyData.forEach(d => {
           const value = d[game];
           const rank = d[game + "_rank"];
@@ -402,7 +408,7 @@
             .attr("cx", xScale(d.date))
             .attr("cy", yScale(value))
             .attr("r", 4)
-            .style("fill", colors[idx % 10])
+            .style("fill", colors[gameIndex % 10])
             .style("stroke", "white")
             .style("stroke-width", 1.5);
 
@@ -472,7 +478,9 @@
     }
 
     // ============ Q3.3-2: Log Scale ============
-    function renderChartC2(games, data, colors, margin, width, height) {
+    function renderChartC2(allGames, data, colors, margin, width, height) {
+      const games4 = ["Catan", "Codenames", "Terraforming Mars", "Gloomhaven"];
+      
       const svg = d3.select("body").append("svg")
         .attr("id", "svg-c-2")
         .attr("width", width + margin.left + margin.right + 120)
@@ -499,7 +507,7 @@
         .range([0, width]);
 
       const yScale = d3.scaleLog()
-        .domain([1, d3.max(games, game => d3.max(data, d => d[game]))])
+        .domain([1, d3.max(allGames, game => d3.max(data, d => d[game]))])
         .range([height, 0]);
 
       // Create line generator
@@ -510,8 +518,8 @@
       // Lines group
       const linesGroup = plot.append("g").attr("id", "lines-c-2");
 
-      // Draw lines for each game
-      games.forEach((game, idx) => {
+      // Draw lines for ALL 8 games
+      allGames.forEach((game, idx) => {
         const gameData = data.map(d => ({ date: d.date, value: d[game] }));
 
         linesGroup.append("path")
@@ -530,13 +538,14 @@
           .text(game);
       });
 
-      // Symbols group
+      // Symbols group - ONLY for 4 games
       const symbolsGroup = plot.append("g").attr("id", "symbols-c-2");
 
-      // Add circle markers every 3 months
+      // Add circle markers every 3 months - ONLY for 4 games
       const threeMonthlyData = data.filter((d, i) => i % 3 === 0);
 
-      games.forEach((game, idx) => {
+      games4.forEach((game, idx) => {
+        const gameIndex = allGames.indexOf(game);
         threeMonthlyData.forEach(d => {
           const value = d[game];
           const rank = d[game + "_rank"];
@@ -545,7 +554,7 @@
             .attr("cx", xScale(d.date))
             .attr("cy", yScale(value))
             .attr("r", 4)
-            .style("fill", colors[idx % 10])
+            .style("fill", colors[gameIndex % 10])
             .style("stroke", "white")
             .style("stroke-width", 1.5);
 
