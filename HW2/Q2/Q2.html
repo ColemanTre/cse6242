@@ -53,7 +53,7 @@ text#credit {
 <title>Force-Directed Graph: Board Games</title>
 </head>
 
-<body>
+<body style="margin: 0; padding: 0; overflow: hidden;">
 <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
 <script>
 
@@ -98,7 +98,7 @@ d3.dsv(",", "board_games.csv", function(d) {
   // Create scales
   var radiusScale = d3.scaleSqrt()
     .domain([minDegree, maxDegree])
-    .range([8, 25]);
+    .range([12, 35]);
 
   var colorScale = d3.scaleLinear()
     .domain([minDegree, (minDegree + maxDegree) / 2, maxDegree])
@@ -110,6 +110,13 @@ d3.dsv(",", "board_games.csv", function(d) {
   var svg = d3.select("body").append("svg")
       .attr("width", width)
       .attr("height", height);
+
+  // Add background rect to define bounds
+  svg.append("rect")
+      .attr("width", width)
+      .attr("height", height)
+      .attr("fill", "white")
+      .attr("fill-opacity", 0);
 
   // Define tick function before force simulation
   var path, node, labels;
